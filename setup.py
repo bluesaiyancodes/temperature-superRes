@@ -7,9 +7,9 @@ def parse_requirements(filename):
         return [line.strip() for line in req_file if line.strip() and not line.startswith("#")]
 
 setup(
-    name="nuclei_panoptic",
+    name="Temperature Super Resolution",
     version="0.1.0",
-    description="Nuclei Panoptic Segmentation Project",
+    description="Increase the resolution of low rws temperature image using deep learning.",
     author="Bishal Swain",
     author_email="blue.bishal@rocketmail.com",
     packages=find_packages(where="src"),
