@@ -52,5 +52,5 @@ other:
   save_val_images_local: true
   run_testing: true
   testing_loss: true
-  run_testing_only: true
+  run_testing_only: true     # set to false when training the model
   testing_only_model_path: "outputs/2025-05-29/22-54-23/models/"

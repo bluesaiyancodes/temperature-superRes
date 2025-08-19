@@ -1,7 +1,7 @@
 [project]
-name = "nuclei_panoptic"
+name = "temp_superes"
 version = "0.1.0"
-description = "Nuclei Panoptic Segmentation Project"
+description = "Temperature Super Resolution Project"
 authors = [{name = "Bishal Swain", email = "blue.bishal@rocketmail.com"}]
 dynamic = ["dependencies"]
 
