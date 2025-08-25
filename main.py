@@ -221,7 +221,7 @@ def test_model_and_save_outputs(model, test_loader, criterion, device, config, e
         if criterion: # Calculate loss if criterion is provided
             loss = criterion(generated_hr_images, hr_images)
             test_loss += loss.item() * lr_images.size(0)
-            progress_bar.set_postfix(loss=loss.item())
+            progress_bar.set_postfix(error=loss.item())
 
         recontruct_error = F.l1_loss(generated_hr_images, hr_images, reduction='mean') if criterion else None
         if recontruct_error is not None:
@@ -241,13 +241,24 @@ def test_model_and_save_outputs(model, test_loader, criterion, device, config, e
         avg_test_loss = test_loss / len(test_loader.dataset)
         logger.info(f"Average Test Loss: {avg_test_loss:.6f}")
         avg_reconstruction_error = np.mean(recontruct_errors) if recontruct_errors else None
-        logger.info(f"Average Reconstruction Error (L1 Loss): {avg_reconstruction_error:.6f}")
+        logger.info(f"Average Reconstruction Error: {avg_reconstruction_error:.6f}")
         
         if config.other.wandb:
             wandb.summary["test_loss"] = avg_test_loss
             wandb.summary["avg_reconstruction_error"] = avg_reconstruction_error
     else:
         avg_test_loss = None # No loss calculated
+
+    # save recostruction errors to csv
+    dir = os.path.join(exp_dir, "test_outputs")
+    os.makedirs(dir, exist_ok=True)
+    if recontruct_errors:
+        errors_file = os.path.join(dir, "errors.csv")
+        with open(errors_file, "w") as f:
+            f.write("Index,Reconstruction Error\n")
+            for idx, error in enumerate(recontruct_errors):
+                f.write(f"{idx},{error:.6f}\n")
+        logger.info(f"Saved reconstruction errors to {errors_file}")
 
     logger.info(f"Saved {image_counter} test image sets.")
     return avg_test_loss
@@ -265,7 +276,7 @@ def main(config: DictConfig):
         logging.getLogger().setLevel(logging.INFO)
 
     logger.info(f"Selected Dataset - {config.dataset.name}")
-    logger.info("Experiment Configuration:\n%s", OmegaConf.to_yaml(config))
+    #logger.info("Experiment Configuration:\n%s", OmegaConf.to_yaml(config))
     hydra_cfg = hydra.core.hydra_config.HydraConfig.get()
     exp_dir = hydra_cfg['runtime']['output_dir']
     logger.info(f"Experiment output directory: {exp_dir}")
